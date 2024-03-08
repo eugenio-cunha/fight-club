@@ -10,7 +10,7 @@ import (
 func NewServer() *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName:       "Fight Club",
-		Prefork:       true,
+		Prefork:       false,
 		CaseSensitive: true,
 		JSONEncoder:   sonic.Marshal,
 		JSONDecoder:   sonic.Unmarshal,
