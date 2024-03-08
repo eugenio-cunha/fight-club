@@ -2,7 +2,9 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"strconv"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
@@ -15,14 +17,22 @@ var (
 	ctx  context.Context
 )
 
-func Connect(url string) *pgxpool.Pool {
+func Connect(user string, password string, host string, port string, name string, max string) *pgxpool.Pool {
 	once.Do(func() {
+		url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, name)
 		ctx = context.Background()
+
+		i, err := strconv.ParseInt(max, 10, 32)
+		if err != nil {
+			log.Fatalln("Unable to parse maximum pool size:", err)
+		}
 
 		pool, err := pgxpool.ParseConfig(url)
 		if err != nil {
 			log.Fatalln("Unable to parse connection url:", err)
 		}
+
+		pool.MaxConns = int32(i)
 
 		db, err = pgxpool.NewWithConfig(ctx, pool)
 		if err != nil {
@@ -31,17 +41,6 @@ func Connect(url string) *pgxpool.Pool {
 
 		if err := db.Ping(ctx); err != nil {
 			log.Fatalf("Failed to connect to database: %v", err)
-		}
-
-		truncate := `TRUNCATE TABLE public.client RESTART IDENTITY;
-		TRUNCATE TABLE public.client_transaction RESTART IDENTITY;
-		INSERT INTO public.client(id, "limit", balance) VALUES (1, 100000, 0);
-		INSERT INTO public.client(id, "limit", balance) VALUES (2, 80000, 0);
-		INSERT INTO public.client(id, "limit", balance) VALUES (3, 1000000, 0);
-		INSERT INTO public.client(id, "limit", balance) VALUES (4, 10000000, 0);
-		INSERT INTO public.client(id, "limit", balance) VALUES (5, 500000, 0);`
-		if err := Exec(truncate); err != nil {
-			log.Fatalf("Failed to truncante: %v", err)
 		}
 	})
 
