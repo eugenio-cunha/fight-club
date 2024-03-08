@@ -24,8 +24,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.17"
-          memory: "150MB"
+          cpus: "1"
+          memory: "250MB"
 
   nginx:
     image: nginx:latest
@@ -40,11 +40,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.17"
-          memory: "80MB"
+          cpus: "0.16"
+          memory: "50MB"
 
-  api_01: &api # image: eugenio-cunha/figth_club:latest
-    build: .
+  api_01: &api 
+    image: eugeniocunha/fight_club:latest
     restart: always
     hostname: api_01
     environment:
@@ -62,8 +62,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.15"
-          memory: "150MB"
+          cpus: "0.16"
+          memory: "100MB"
 
   api_02:
     <<: *api

@@ -14,7 +14,7 @@ docker:
 	docker build -t eugenio-cunha/fight_club .
 
 docker-push:
-	docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag eugenio-cunha/fight_club .
+	docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag eugeniocunha/fight_club .
 
 docker-down:
 	docker compose down -v --remove-orphans
