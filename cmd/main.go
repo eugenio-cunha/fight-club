@@ -12,13 +12,6 @@ import (
 )
 
 func main() {
-	// loc, err := time.LoadLocation("America/Sao_Paulo")
-	// if err != nil {
-	// 	fmt.Println("Error loading location:", err)
-	// 	return
-	// }
-	// time.Local = loc
-
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Coudn't load .env file")
