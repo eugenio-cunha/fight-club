@@ -11,8 +11,13 @@
 
 ```.env
 # Server
-SERVER_PORT=8080
+HTTP_PORT=8080
 
 # Database
-POSTGRES_URL=postgres://username:*****@localhost:5432/database?sslmode=disable
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=fight_club
+DB_PORT=5432
+DB_POOL=30
 ```
