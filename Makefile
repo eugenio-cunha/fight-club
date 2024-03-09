@@ -11,13 +11,16 @@ clean:
 	rm -rf ./bin
 
 docker:
-	docker build -t eugenio-cunha/fight_club .
+	docker build -t eugeniocunha/fight-club .
 
 docker-push:
-	docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag eugeniocunha/fight_club .
+	docker buildx build --platform linux/amd64 --push --tag eugeniocunha/fight-club .
 
 docker-down:
 	docker compose down -v --remove-orphans
 
 docker-dev: docker-down
+	docker compose -f docker-compose.yml up --build
+
+docker-up: docker-down
 	docker compose -f docker-compose.yml up --build -d

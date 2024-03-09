@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -22,25 +23,30 @@ func Connect(user string, password string, host string, port string, name string
 		url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, name)
 		ctx = context.Background()
 
-		i, err := strconv.ParseInt(max, 10, 32)
+		maxConns, err := strconv.ParseInt(max, 10, 32)
 		if err != nil {
 			log.Fatalln("Unable to parse maximum pool size:", err)
 		}
 
-		pool, err := pgxpool.ParseConfig(url)
-		if err != nil {
-			log.Fatalln("Unable to parse connection url:", err)
-		}
+		for i := 0; i < 10; i++ {
+			pool, err := pgxpool.ParseConfig(url)
+			if err != nil {
+				log.Fatalln("Unable to parse connection url:", err)
+			}
 
-		pool.MaxConns = int32(i)
+			pool.MaxConns = int32(maxConns)
 
-		db, err = pgxpool.NewWithConfig(ctx, pool)
-		if err != nil {
-			log.Fatalln("Unable to create connection pool:", err)
-		}
+			db, err = pgxpool.NewWithConfig(ctx, pool)
+			if err != nil {
+				log.Fatalln("Unable to create connection pool:", err)
+			}
 
-		if err := db.Ping(ctx); err != nil {
-			log.Fatalf("Failed to connect to database: %v", err)
+			if err := db.Ping(ctx); err == nil {
+				break
+			} else {
+				fmt.Println("Failed to connect to DB, retrying in 3 seconds")
+				time.Sleep(3 * time.Second)
+			}
 		}
 	})
 
